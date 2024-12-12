@@ -47,8 +47,49 @@ const MainPage = () => {
         "Nagpur": [21.1458, 79.0882],
         "Indore": [22.7196, 75.8577],
         "Bhopal": [23.2599, 77.4126],
-        "Raipur": [21.2514, 81.6296]
+        "Raipur": [21.2514, 81.6296],
+        "Agartala": [23.8315, 91.2868],
+        "Gwalior": [26.2183, 78.1828],
+        "Vijayawada": [16.5063, 80.6480],
+        "Nagaland": [26.1584, 94.5624],  // Assuming Kohima as reference for Nagaland
+        "Bhubaneswar": [20.2961, 85.8189],
+        "Patiala": [30.3397, 76.3982],
+        "Srinagar": [34.0836, 74.7973],
+        "Chandrapur": [19.9611, 79.2906],
+        "Jammu": [32.7266, 74.8570],
+        "Tirunelveli": [8.7101, 77.7261],
+        "Mangalore": [12.9141, 74.8560],
+        "Ranchi": [23.3441, 85.3096],
+        "Udhampur": [32.9375, 75.1458],
+        "Rourkela": [22.2607, 84.7904],
+        "Dhanbad": [23.8006, 86.4392],
+        "Kozhikode": [11.2588, 75.7804],
+        "Gokarna": [14.5551, 74.3128],
+        "Madurai": [9.9250, 78.1193],
+        "Pondicherry": [11.9416, 79.8083],
+        "Kullu": [32.0007, 77.1051],
+        "Tirupati": [13.6288, 79.4192],
+        "Kanchipuram": [12.8315, 79.7066],
+        "Khajuraho": [24.8510, 79.9197],
+        "Chikmagalur": [13.3177, 75.7805],
+        "Mahabalipuram": [12.6190, 80.2203],
+        "Coimbatore": [11.0168, 76.9558],
+        "Varkala": [8.7331, 76.7166],
+        "Kumarakom": [9.6003, 76.5228],
+        "Alleppey": [9.4981, 76.3388],
+        "Hampi": [15.3350, 76.4610],
+        "Jaisalmer": [26.9124, 70.9115],
+        "Kedarnath": [30.7333, 79.0700],
+        "Nainital": [29.3793, 79.4543],
+        "Bikaner": [28.0220, 73.3114],
+        "Cherrapunji": [25.2914, 91.7362],
+        "Chirala": [15.8314, 80.3667],
+        "Bardez": [15.5561, 73.7516],  // Assuming Goa as reference for Bardez
+        "Pondicherry": [11.9416, 79.8083],
+        "Chikmagalur": [13.3177, 75.7805],
+        "Tawang": [27.5577, 91.8619]
     };
+    
 
     const [route, setRoute] = useState([]);
     const [source, setSource] = useState("");

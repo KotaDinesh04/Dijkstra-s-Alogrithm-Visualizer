@@ -3,7 +3,12 @@ export const places = [
     "Darjeeling", "Varanasi", "Hyderabad", "Pune", "Amritsar", "Shimla", "Manali",
     "Leh", "Udaipur", "Rishikesh", "Haridwar", "Ooty", "Mysore", "Ahmedabad",
     "Surat", "Lucknow", "Patna", "Guwahati", "Shillong", "Kochi", "Thiruvananthapuram",
-    "Jodhpur", "Ajmer", "Chandigarh", "Nagpur", "Indore", "Bhopal", "Raipur"
+    "Jodhpur", "Ajmer", "Chandigarh", "Nagpur", "Indore", "Bhopal", "Raipur",
+    "Agartala", "Gwalior", "Vijayawada", "Nagaland", "Bhubaneswar", "Patiala", "Srinagar",
+    "Chandrapur", "Jammu", "Tirunelveli", "Mangalore", "Ranchi", "Udhampur", "Rourkela",
+    "Dhanbad", "Kozhikode", "Gokarna", "Madurai", "Pondicherry", "Kullu", "Tirupati", "Kanchipuram",
+    "Khajuraho", "Chikmagalur", "Mahabalipuram", "Coimbatore", "Varkala", "Kumarakom", "Alleppey",
+    "Hampi", "Jaisalmer", "Kedarnath", "Nainital", "Bikaner", "Cherrapunji", "Chirala", "Bardez","Tawang"
 ];
 
 export const connections = [
@@ -71,8 +76,35 @@ export const connections = [
     { "from": "Hyderabad", "to": "Bangalore", "distance": 660 },
     { "from": "Hyderabad", "to": "Chennai", "distance": 660 },
     { "from": "Raipur", "to": "Nagpur", "distance": 284 },
-    { "from": "Raipur", "to": "Bhopal", "distance": 609 }
+    { "from": "Raipur", "to": "Bhopal", "distance": 609 },
+    // New Connections
+    { "from": "Agartala", "to": "Guwahati", "distance": 520 },
+    { "from": "Gwalior", "to": "Indore", "distance": 380 },
+    { "from": "Vijayawada", "to": "Hyderabad", "distance": 275 },
+    { "from": "Bhubaneswar", "to": "Kolkata", "distance": 440 },
+    { "from": "Srinagar", "to": "Jammu", "distance": 260 },
+    { "from": "Ranchi", "to": "Bhubaneswar", "distance": 320 },
+    { "from": "Udhampur", "to": "Srinagar", "distance": 160 },
+    { "from": "Rourkela", "to": "Raipur", "distance": 300 },
+    { "from": "Dhanbad", "to": "Ranchi", "distance": 130 },
+    { "from": "Kozhikode", "to": "Kochi", "distance": 180 },
+    { "from": "Madurai", "to": "Chennai", "distance": 450 },
+    { "from": "Varkala", "to": "Kochi", "distance": 180 },
+    { "from": "Kullu", "to": "Manali", "distance": 40 },
+    { "from": "Tirupati", "to": "Chennai", "distance": 150 },
+    { "from": "Khajuraho", "to": "Varanasi", "distance": 400 },
+    { "from": "Chikmagalur", "to": "Mysore", "distance": 140 },
+    { "from": "Mahabalipuram", "to": "Chennai", "distance": 60 },
+    { "from": "Coimbatore", "to": "Bangalore", "distance": 340 },
+    { "from": "Varkala", "to": "Kumarakom", "distance": 160 },
+    { "from": "Hampi", "to": "Bangalore", "distance": 340 },
+    { "from": "Jaisalmer", "to": "Jodhpur", "distance": 330 },
+    { "from": "Kedarnath", "to": "Rishikesh", "distance": 202 },
+    { "from": "Bikaner", "to": "Jodhpur", "distance": 300 },
+    { "from": "Cherrapunji", "to": "Shillong", "distance": 54 },
+    { "from": "Pondicherry", "to": "Chennai", "distance": 150 }
 ];
+
 
 export let adjL = [];
 export let indices = new Map();
