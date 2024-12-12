@@ -7,6 +7,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { indices, revIndices, adjL, places, getPath, connections } from '../Algo'
 import { Button } from '@mui/material';
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import 'leaflet/dist/leaflet.css';
+
 const MainPage = () => {
     const indiaCoordinates = {
         "Delhi": [28.6139, 77.2090],
@@ -55,18 +58,14 @@ const MainPage = () => {
 
     const createMap = async () => {
         let path = await getPath(source, destination);
-        //console.log(adjL);
-        // console.log(path);
         setRoute(path);
     }
 
     const handleSourceChange = async (e, val) => {
         setSource(val);
-        //console.log(source);      
     }
     const handleDestinationChange = async (e, val) => {
         setDestination(val);
-        //console.log(destination);      
     }
 
 
@@ -76,20 +75,19 @@ const MainPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         await createMap(source, destination);
-        // console.log(source, destination, start, end);
         const diffInDays = end.diff(start, 'days');
         // console.log(diffInDays);
     }
 
 
     return (
-        <div>
+        <div className='main-container'>
             <div className="home-container">
                 <form onSubmit={handleSubmit} className='home-form'>
                     <div className="home-inputs">
 
                         <Autocomplete
-                            style={{ marginTop: "1.5vh" }}
+                            style={{ marginTop: "1vh" , backgroundColor: "white"}}
                             disablePortal
                             options={places}
                             id='source'
@@ -99,7 +97,7 @@ const MainPage = () => {
                             renderInput={(params) => <TextField {...params} label="Source" />}
                         />
                         <Autocomplete
-                            style={{ marginTop: "1.5vh" }}
+                            style={{ marginTop: "1vh" , backgroundColor: "white"}}
                             disablePortal
                             options={places}
                             value={destination}
@@ -108,23 +106,46 @@ const MainPage = () => {
                             onChange={handleDestinationChange}
                             renderInput={(params) => <TextField {...params} label="Destination" />}
                         />
-
-
-                        <LocalizationProvider dateAdapter={AdapterDayjs} >
-                            <DemoContainer components={['DatePicker']}>
-                                <DatePicker label="Start Date" value={start} onChange={(date) => setStart(date)} />
-                            </DemoContainer>
-                        </LocalizationProvider>
+                        <div className="date-container">
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DemoContainer components={['DatePicker']}>
+                                    <DatePicker label="Start Date" value={start} onChange={(date) => setStart(date)}/>
+                                </DemoContainer>
+                            </LocalizationProvider>
+                        </div>
+                        <div className="date-container">
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer components={['DatePicker']}>
                                 <DatePicker label="End Date" value={end} onChange={(date) => setEnd(date)} />
                             </DemoContainer>
                         </LocalizationProvider>
+
+                        </div>
                     </div>
                     <div className="submit-btn">
-                        <Button type='submit' variant='contained'>Click</Button>
+                        <Button type='submit' variant='contained'>Submit</Button>
                     </div>
                 </form>
+            </div>
+            <div className="map-container">
+                <MapContainer center={[20.5937, 78.9629]} zoom={5} style={{ width: "100%", height: "100%" }}>
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    {places && places.length > 0 && places.map((place) => {
+                        const coords = indiaCoordinates[place];
+                        if (coords) {
+                            const [lat, lng] = coords;
+                            return (
+                                <Marker position={[lat, lng]} key={place}>
+                                    <Popup>{place}</Popup>
+                                </Marker>
+                            );
+                        }
+                        return null;
+                    })}
+                    {route.length > 0 && (
+                        <Polyline positions={route.map(node => indiaCoordinates[node])} color="red" />
+                    )}
+                </MapContainer>
             </div>
         </div>
     )

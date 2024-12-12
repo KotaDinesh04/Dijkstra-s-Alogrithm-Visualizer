@@ -14,3 +14,26 @@
     justify-content: center;
     margin-top: 4vh;
 }
+
+.main-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.home-container {
+  position: absolute;
+  z-index: 1000;
+  width: 100%;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1; /* Ensure it's behind the inputs */
+}
+
+.date-container {
+    background-color: white;
+}
