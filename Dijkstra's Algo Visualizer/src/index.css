@@ -1,0 +1,16 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+.home-inputs{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.submit-btn{
+    display: flex;
+    justify-content: center;
+    margin-top: 4vh;
+}

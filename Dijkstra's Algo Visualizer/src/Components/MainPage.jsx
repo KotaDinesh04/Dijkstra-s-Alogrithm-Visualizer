@@ -1,5 +1,12 @@
 import React, { useState } from 'react'
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { indices, revIndices, adjL, places, getPath, connections } from '../Algo'
+import { Button } from '@mui/material';
 const MainPage = () => {
     const indiaCoordinates = {
         "Delhi": [28.6139, 77.2090],
@@ -43,36 +50,82 @@ const MainPage = () => {
     const [route, setRoute] = useState([]);
     const [source, setSource] = useState("");
     const [destination, setDestination] = useState("");
+    const [start, setStart] = useState(null);
+    const [end, setEnd] = useState(null);
 
-    const createMap = async() => {
+    const createMap = async () => {
         let path = await getPath(source, destination);
         //console.log(adjL);
-        console.log(path);
+        // console.log(path);
+        setRoute(path);
     }
 
-    const handleSourceChange = async(e) => {
-        setSource(e.target.value); 
+    const handleSourceChange = async (e, val) => {
+        setSource(val);
         //console.log(source);      
     }
-    const handleDestinationChange = async(e) => {
-        setDestination(e.target.value); 
+    const handleDestinationChange = async (e, val) => {
+        setDestination(val);
         //console.log(destination);      
     }
 
-    const handleSubmit = async(e) => {
+
+
+
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        createMap(source, destination);
-        console.log(source, destination);
+        await createMap(source, destination);
+        // console.log(source, destination, start, end);
+        const diffInDays = end.diff(start, 'days');
+        // console.log(diffInDays);
     }
 
 
     return (
         <div>
-            <form action="/">
-                <input type="text" id='source' onChange={handleSourceChange}/>
-                <input type="text" id='destination' onChange={handleDestinationChange}/>
-                <button type='submit' onClick={handleSubmit}>Click</button>
-            </form>
+            <div className="home-container">
+                <form onSubmit={handleSubmit} className='home-form'>
+                    <div className="home-inputs">
+
+                        <Autocomplete
+                            style={{ marginTop: "1.5vh" }}
+                            disablePortal
+                            options={places}
+                            id='source'
+                            value={source}
+                            sx={{ width: 259 }}
+                            onChange={handleSourceChange}
+                            renderInput={(params) => <TextField {...params} label="Source" />}
+                        />
+                        <Autocomplete
+                            style={{ marginTop: "1.5vh" }}
+                            disablePortal
+                            options={places}
+                            value={destination}
+                            id='destination'
+                            sx={{ width: 259 }}
+                            onChange={handleDestinationChange}
+                            renderInput={(params) => <TextField {...params} label="Destination" />}
+                        />
+
+
+                        <LocalizationProvider dateAdapter={AdapterDayjs} >
+                            <DemoContainer components={['DatePicker']}>
+                                <DatePicker label="Start Date" value={start} onChange={(date) => setStart(date)} />
+                            </DemoContainer>
+                        </LocalizationProvider>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer components={['DatePicker']}>
+                                <DatePicker label="End Date" value={end} onChange={(date) => setEnd(date)} />
+                            </DemoContainer>
+                        </LocalizationProvider>
+                    </div>
+                    <div className="submit-btn">
+                        <Button type='submit' variant='contained'>Click</Button>
+                    </div>
+                </form>
+            </div>
         </div>
     )
 }
