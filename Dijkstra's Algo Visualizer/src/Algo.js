@@ -186,7 +186,7 @@ class Pair {
 const main = ()=>{
     buildIndices();
     buildAdjL();
-    getPath("Delhi","Mumbai");
+    //getPath("Delhi","Mumbai");
 }
 
 main();
