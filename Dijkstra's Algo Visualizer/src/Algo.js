@@ -70,87 +70,197 @@ export const connections = [
 ];
 
 
-export let adjL = [];
 export let indices = new Map();
 export let revIndices = new Map();
-export let distances = []
-export let parent = []
+export let adjL = [];
 
-//Fuctions:
-const buildIndices = ()=>{
-    for(let i=0; i<places.length; i++) {
-        indices.set(places[i],i);
-        revIndices.set(i,places[i]);
+// Build lookup maps for index <-> city name
+export const buildIndices = () => {
+    indices = new Map();
+    revIndices = new Map();
+    for (let i = 0; i < places.length; i++) {
+        indices.set(places[i], i);
+        revIndices.set(i, places[i]);
     }
-    // console.log(indices);
-    // console.log(revIndices);
-}
+};
 
-const buildAdjL = ()=>{
-    adjL = Array.from({length:places.length},()=>[]);
-    connections.forEach((con)=>{
-        adjL[indices.get(con.from)].push(new Edge(indices.get(con.to),con.distance));
-        adjL[indices.get(con.to)].push(new Edge(indices.get(con.from),con.distance));
+// Build adjacency list for Dijkstra graph
+export const buildAdjL = () => {
+    adjL = Array.from({ length: places.length }, () => []);
+    connections.forEach((con) => {
+        const u = indices.get(con.from);
+        const v = indices.get(con.to);
+        if (u !== undefined && v !== undefined) {
+            adjL[u].push({ v, distance: con.distance });
+            adjL[v].push({ v: u, distance: con.distance });
+        }
     });
-    // console.log(adjL);
-}
+};
 
-const buildDisatanceArr = (source)=>{
-    parent = Array.from({length: places.length},(_,index)=>index);
-    distances = new Array(places.length).fill(Infinity);
-    distances[source] = 0;
-    const pq = [new Pair(source,0)];
-    while(pq.length > 0) {
-        const curr = pq.shift();
-        adjL[curr.node].forEach((neg)=>{
-            if(neg.distance + curr.dist < distances[neg.v]) {
-                distances[neg.v] = neg.distance + curr.dist;
-                pq.push(new Pair(neg.v,distances[neg.v]));
-                parent[neg.v] = curr.node;
-            }
-        });
+// Initialize graph structures
+buildIndices();
+buildAdjL();
+
+/**
+ * Executes Dijkstra's Algorithm with a Min-Priority Queue.
+ * @param {string} source - Origin city name
+ * @param {string} destination - Target city name
+ * @returns {{ path: string[], distance: number, found: boolean, error?: string }}
+ */
+export const getPath = (source, destination) => {
+    if (!source || !destination) {
+        return { path: [], distance: 0, found: false, error: "Please select both source and destination." };
     }
-    // console.log(parent);
-}
+    if (!indices.has(source) || !indices.has(destination)) {
+        return { path: [], distance: 0, found: false, error: "Invalid city selected." };
+    }
+    if (source === destination) {
+        return { path: [source], distance: 0, found: true };
+    }
 
-export const getPath = (source,destination) =>{
-    buildDisatanceArr(indices.get(source));
-    let path = [];
-    let node = indices.get(destination);
-    path.push(revIndices.get(node));
-    while(node != parent[node]) {
-        path.push(revIndices.get(parent[node]));
-        node = parent[node];
+    const srcIdx = indices.get(source);
+    const destIdx = indices.get(destination);
+
+    const parent = Array.from({ length: places.length }, (_, index) => index);
+    const distances = new Array(places.length).fill(Infinity);
+    distances[srcIdx] = 0;
+
+    // Min-Priority Queue tracking { node, dist }
+    const pq = [{ node: srcIdx, dist: 0 }];
+
+    while (pq.length > 0) {
+        // Always extract the node with the lowest tentative distance
+        pq.sort((a, b) => a.dist - b.dist);
+        const curr = pq.shift();
+
+        // Skip stale entries
+        if (curr.dist > distances[curr.node]) continue;
+
+        // Early exit: destination reached with optimal distance
+        if (curr.node === destIdx) break;
+
+        for (const edge of adjL[curr.node]) {
+            const nextDist = curr.dist + edge.distance;
+            if (nextDist < distances[edge.v]) {
+                distances[edge.v] = nextDist;
+                parent[edge.v] = curr.node;
+                pq.push({ node: edge.v, dist: nextDist });
+            }
+        }
+    }
+
+    if (distances[destIdx] === Infinity) {
+        return { path: [], distance: Infinity, found: false, error: `No route exists between ${source} and ${destination}.` };
+    }
+
+    // Reconstruct shortest path from parent pointers
+    const path = [];
+    let curr = destIdx;
+    path.push(revIndices.get(curr));
+    while (curr !== srcIdx && curr !== parent[curr]) {
+        curr = parent[curr];
+        path.push(revIndices.get(curr));
     }
     path.reverse();
-    // path.forEach((i)=>{
-    //     console.log(revIndices.get(i));
-    // });
-    // console.log(path);
-    return path;
-}
 
+    return { path, distance: distances[destIdx], found: true };
+};
 
-//Classes:
-class Edge {
-    constructor(v,distance) {
-        this.v = v;
-        this.distance = distance;
+/**
+ * Generator that records every step of Dijkstra for visualizer animation.
+ * @param {string} source
+ * @param {string} destination
+ * @returns {Array<Object>} List of step events
+ */
+export const getDijkstraSteps = (source, destination) => {
+    if (!source || !destination || !indices.has(source) || !indices.has(destination)) {
+        return [];
     }
-}
 
-class Pair {
-    constructor(node,dist) {
-        this.node = node;
-        this.dist = dist;
+    const srcIdx = indices.get(source);
+    const destIdx = indices.get(destination);
+    const steps = [];
+
+    const parent = Array.from({ length: places.length }, (_, index) => index);
+    const distances = new Array(places.length).fill(Infinity);
+    const settled = new Set();
+    distances[srcIdx] = 0;
+
+    const pq = [{ node: srcIdx, dist: 0 }];
+    steps.push({
+        type: 'INIT',
+        source,
+        destination,
+        message: `Initialized Dijkstra from ${source}`
+    });
+
+    while (pq.length > 0) {
+        pq.sort((a, b) => a.dist - b.dist);
+        const curr = pq.shift();
+        const currPlace = revIndices.get(curr.node);
+
+        if (curr.dist > distances[curr.node]) continue;
+
+        settled.add(curr.node);
+        steps.push({
+            type: 'VISIT_NODE',
+            node: currPlace,
+            dist: curr.dist,
+            settled: Array.from(settled).map(i => revIndices.get(i)),
+            queue: pq.map(item => ({ city: revIndices.get(item.node), dist: item.dist })),
+            message: `Visiting ${currPlace} (Shortest Distance: ${curr.dist} km)`
+        });
+
+        if (curr.node === destIdx) {
+            steps.push({
+                type: 'DESTINATION_REACHED',
+                node: currPlace,
+                dist: curr.dist,
+                message: `Reached destination ${currPlace} in ${curr.dist} km!`
+            });
+            break;
+        }
+
+        for (const edge of adjL[curr.node]) {
+            const nextPlace = revIndices.get(edge.v);
+            const nextDist = curr.dist + edge.distance;
+
+            if (nextDist < distances[edge.v]) {
+                const oldDist = distances[edge.v];
+                distances[edge.v] = nextDist;
+                parent[edge.v] = curr.node;
+                pq.push({ node: edge.v, dist: nextDist });
+
+                steps.push({
+                    type: 'RELAX_EDGE',
+                    from: currPlace,
+                    to: nextPlace,
+                    edgeDistance: edge.distance,
+                    oldDist: oldDist === Infinity ? '∞' : oldDist,
+                    newDist,
+                    message: `Relaxed edge ${currPlace} ➔ ${nextPlace}: Updated distance to ${nextDist} km`
+                });
+            }
+        }
     }
-}
 
-//Function calls
-const main = ()=>{
-    buildIndices();
-    buildAdjL();
-    //getPath("Delhi","Mumbai");
-}
+    if (distances[destIdx] !== Infinity) {
+        const path = [];
+        let curr = destIdx;
+        path.push(revIndices.get(curr));
+        while (curr !== srcIdx && curr !== parent[curr]) {
+            curr = parent[curr];
+            path.push(revIndices.get(curr));
+        }
+        path.reverse();
 
-main();
+        steps.push({
+            type: 'COMPLETE',
+            path,
+            distance: distances[destIdx],
+            message: `Shortest path found: ${path.join(' ➔ ')} (${distances[destIdx]} km)`
+        });
+    }
+
+    return steps;
+};

@@ -14,32 +14,37 @@ const MainPage = () => {
     const indiaCoordinates = cities;
 
     const [route, setRoute] = useState([]);
+    const [totalDistance, setTotalDistance] = useState(null);
     const [source, setSource] = useState("");
     const [destination, setDestination] = useState("");
     const [start, setStart] = useState(null);
     const [end, setEnd] = useState(null);
 
     const createMap = async () => {
-        let path = await getPath(source, destination);
-        setRoute(path);
+        const result = getPath(source, destination);
+        if (result && result.found) {
+            setRoute(result.path);
+            setTotalDistance(result.distance);
+        } else {
+            setRoute([]);
+            setTotalDistance(null);
+        }
     }
 
     const handleSourceChange = async (e, val) => {
-        setSource(val);
+        setSource(val || "");
     }
     const handleDestinationChange = async (e, val) => {
-        setDestination(val);
+        setDestination(val || "");
     }
-
-
-
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         await createMap(source, destination);
-        const diffInDays = end.diff(start, 'days');
-        // console.log(diffInDays);
+        if (start && end) {
+            const diffInDays = end.diff(start, 'days');
+            // console.log(diffInDays);
+        }
     }
 
 
